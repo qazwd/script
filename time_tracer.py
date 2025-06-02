@@ -13,7 +13,6 @@ class Time_tracer:
 
         self.running = False             # 是否正在运行
         self.start_segment_time = False  # 是否开始片段计时
-        self.real_time = False           # 是否实时显示
         self.time_segments = []          # 记录每次运行时间的列表
 
     def start(self):
