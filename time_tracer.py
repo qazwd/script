@@ -57,19 +57,17 @@ class Time_tracer:
 
     def _real_time_display(self):
         '''实时显示程序运行时间'''
-        while self.start_segment_time:               # 当开始片段计时
-            real_segment_time = time.time() - self.segment_time                # 计算片段时间
-            real_total_time = time.time() - self.start_time                    # 计算总时间
-            text_display = f"该过程用时：{self._set_format_time(real_segment_time)} | 总用时：{self._set_format_time(real_total_time)} "
-            text_length = len(text_display + 10 * ' ')                         # 计算文本长度
-            self._right_print_time_and_clear(text_display, text_length)        # 右对齐显示文本
-            time.sleep(0.1)                                                    # 暂停0.1秒
-
-        while not self.start_segment_time:            # 当正在运行时, 且没有开始片段计时时
-            real_total_time = time.time() - self.start_time                     # 计算总时间
-            real_total_time = self._set_format_time(real_total_time)            # 格式化总时间
-            text_display = f"总用时：{real_total_time}          "                # 构造显示文本
-            text_length = len(text_display + 4 * ' ')                           # 计算文本长度
+        while self.running:          # 当程序正在运行
+            if self.start_segment_time:                                         # 当开始片段计时
+                real_segment_time = time.time() - self.segment_time                # 计算片段时间
+                real_total_time = time.time() - self.start_time                    # 计算总时间
+                text_display = f"该过程用时：{self._set_format_time(real_segment_time)} | 总用时：{self._set_format_time(real_total_time)} "
+                text_length = len(text_display + 10 * ' ')                         # 计算文本长度
+            else:
+                real_total_time = time.time() - self.start_time                    # 计算总时间
+                real_total_time = self._set_format_time(real_total_time)           # 格式化总时间
+                text_display = f"总用时：{real_total_time}          "               # 构造显示文本
+                text_length = len(text_display + 4 * ' ')                          # 计算文本长度            
             self._right_print_time_and_clear(text_display, text_length)         # 右对齐显示文本
             time.sleep(0.1)                                                     # 暂停0.1秒
 
@@ -87,7 +85,6 @@ class Time_tracer:
         else:                                           # 如果文本长度小于等于终端宽度
             text_right = text_display
         spaces = max(0, columns - text_length)                                 # 计算需要填充的空格数
-        print()                                                                # 换行
         print('\r' + ' ' * columns + '\r' + ' ' * spaces + text_right, end='', flush=True)  # 打印文本
 
     def record(self):
