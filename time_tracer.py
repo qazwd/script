@@ -39,18 +39,18 @@ class Time_tracer:
             self.start_segment_time = True                       # 标记为开始片段计时
             self.segment_time = time.time()                      # 记录片段开始时间
             self._display_thread = threading.Thread(target=self._real_time_display, daemon=True)  # 后台线程
-            self._display_thread.start()                        # 启动实时显示线程
+            self._display_thread.start()                         # 启动实时显示线程
 
     def stop(self, record=True):
         '''停止计时'''
         if self.running:
-            total_time = time.time() - self.start_time  # 计算总时间
-            self.running = False                        # 标记为停止
-            if record == True and self.time_segments:   # 如果需要记录
-                self.total_time += total_time           # 累加总时间
-                self.record()                           # 显示记录
+            total_time = time.time() - self.start_time                    # 计算总时间
+            self.running = False                                          # 标记为停止
+            if record == True and self.time_segments:                     # 如果需要记录
+                self.total_time += total_time                             # 累加总时间
+                self.record()                                             # 显示记录
             print(f"总用时：{self._set_format_time(total_time)}")         # 显示总时间
-            self.clear_history()                        # 清除历史记录
+            self.clear_history()                                          # 清除历史记录
         elif not self.running:       # 如果时间并没有开始
             # 抛出异常
             raise ValueError("计时还未开始！")
@@ -59,15 +59,15 @@ class Time_tracer:
         '''实时显示程序运行时间'''
         while self.running:          # 当程序正在运行
             if self.start_segment_time:                                         # 当开始片段计时
-                real_segment_time = time.time() - self.segment_time                # 计算片段时间
-                real_total_time = time.time() - self.start_time                    # 计算总时间
+                real_segment_time = time.time() - self.segment_time                 # 计算片段时间
+                real_total_time = time.time() - self.start_time                     # 计算总时间
                 text_display = f"该过程用时：{self._set_format_time(real_segment_time)} | 总用时：{self._set_format_time(real_total_time)} "
-                text_length = len(text_display + 10 * ' ')                         # 计算文本长度
+                text_length = len(text_display + 10 * ' ')                          # 计算文本长度
             else:
-                real_total_time = time.time() - self.start_time                    # 计算总时间
-                real_total_time = self._set_format_time(real_total_time)           # 格式化总时间
-                text_display = f"总用时：{real_total_time}          "               # 构造显示文本
-                text_length = len(text_display + 4 * ' ')                          # 计算文本长度            
+                real_total_time = time.time() - self.start_time                     # 计算总时间
+                real_total_time = self._set_format_time(real_total_time)            # 格式化总时间
+                text_display = f"总用时：{real_total_time}          "                # 构造显示文本
+                text_length = len(text_display + 4 * ' ')                           # 计算文本长度            
             self._right_print_time_and_clear(text_display, text_length)         # 右对齐显示文本
             time.sleep(0.1)                                                     # 暂停0.1秒
 
@@ -94,13 +94,13 @@ class Time_tracer:
             print(f" {10*' '} 过程 {i} 用时: {self._set_format_time(segment)}")                    # 显示每个运行时间片段
         print(f" {8*' '} 所有过程总用时: {self._set_format_time(sum(self.time_segments))}\n")   # 显示所有运行时间片段的总时间
 
-    def clear_history(self, time_segments = True, 
-                            total_time = True, 
-                            start_time = True, 
-                            segment_time = True, 
-                            time_segment = True, 
-                            running = True, 
-                            start_segment_time = True):
+    def clear_history(self, time_segments=True, 
+                            total_time=True, 
+                            start_time=True, 
+                            segment_time=True, 
+                            time_segment=True, 
+                            running=True, 
+                            start_segment_time=True):
         '''清除历史记录'''
         if time_segments:                # 如果需要清除时间片段记录
             self.time_segments = []          # 重置记录列表
