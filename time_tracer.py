@@ -31,8 +31,9 @@ class Time_tracer:
             self.start_segment_time = False                      # 标记为停止片段计时
             self.time_segment = time.time() - self.segment_time  # 计算本次运行时间
             self.time_segments.append(self.time_segment)         # 记录本次运行时间
-            text_display = f"该过程用时：{self._set_format_time(self.time_segment)}"
-            self._right_print_time_and_clear(text_display)  # 右对齐显示文本
+            text_display = f"该过程用时：{self._set_format_time(self.time_segment)} "
+            text_length = len(text_display + 6 * ' ')                    # 计算文本长度
+            self._right_print_time_and_clear(text_display, text_length)  # 右对齐显示文本
             self.segment_time = 0                                # 重置片段时间
         else:                            # 如果还没有开始片段计时
             self.start_segment_time = True                       # 标记为开始片段计时
@@ -60,14 +61,16 @@ class Time_tracer:
             real_segment_time = time.time() - self.segment_time                # 计算片段时间
             real_total_time = time.time() - self.start_time                    # 计算总时间
             text_display = f"该过程用时：{self._set_format_time(real_segment_time)} | 总用时：{self._set_format_time(real_total_time)} "
-            self._right_print_time_and_clear(text_display)          # 右对齐显示文本
+            text_length = len(text_display + 10 * ' ')                    # 计算文本长度
+            self._right_print_time_and_clear(text_display, text_length)          # 右对齐显示文本
             time.sleep(0.1)                                                    # 暂停0.1秒
 
         while not self.start_segment_time:            # 当正在运行时, 且没有开始片段计时时
             real_total_time = time.time() - self.start_time                      # 计算总时间
             real_total_time = self._set_format_time(real_total_time)            # 格式化总时间
-            text_display = f"总用时：{real_total_time} "   # 构造显示文本
-            self._right_print_time_and_clear(text_display)            # 右对齐显示文本
+            text_display = f"总用时：{real_total_time}          "   # 构造显示文本
+            text_length = len(text_display + 4 * ' ')                    # 计算文本长度
+            self._right_print_time_and_clear(text_display, text_length)            # 右对齐显示文本
             time.sleep(0.1)                                                      # 暂停0.1秒
 
     def _set_format_time(self, seconds):
@@ -76,10 +79,9 @@ class Time_tracer:
         minutes, seconds = divmod(remainder, 60)  # 计算分钟和剩余秒数
         return f"{int(hours):02d}:{int(minutes):02d}:{seconds:.2f}"
 
-    def _right_print_time_and_clear(self, text_display):
+    def _right_print_time_and_clear(self, text_display, text_length):
         '''右对齐显示时间'''
         columns = shutil.get_terminal_size().columns    # 获取终端宽度
-        text_length = len(text_display + 10 * ' ')                    # 计算文本长度
         if text_length > columns:                       # 如果文本长度超过终端宽度
             text_right = text_display[:columns - 4] + "..."          # 截断文本并添加省略号
         else:                                           # 如果文本长度小于等于终端宽度
@@ -117,8 +119,8 @@ class Time_tracer:
         if start_segment_time:           # 如果需要清除片段状态记录
             self.start_segment_time = False  # 重置片段状态
 
-
-if __name__ == '__main__':
+# 测试代码
+'''if __name__ == '__main__':
     time_tracer = Time_tracer()
     print("\n开始计时")
     time_tracer.start()
@@ -135,4 +137,4 @@ if __name__ == '__main__':
     time_tracer.sets()
     print("\n过程2结束")
     time.sleep(2)
-    time_tracer.stop()
+    time_tracer.stop()'''
