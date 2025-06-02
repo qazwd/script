@@ -1,7 +1,6 @@
 import time
 import shutil
 import threading
-import sys
 
 class Time_tracer:
     '''实时显示程序运行时间'''
@@ -34,8 +33,7 @@ class Time_tracer:
             self.time_segment = time.time() - self.segment_time  # 计算本次运行时间
             self.time_segments.append(self.time_segment)         # 记录本次运行时间
             text_display = f"该过程用时：{self._set_format_time(self.time_segment)}"
-            spaces, text_right = self._right_print_time(text_display)  # 右对齐显示文本
-            print(''* spaces + text_right, end='\r', flush=True)       # 打印文本
+            self._right_print_time_and_clear(text_display)  # 右对齐显示文本
             self.segment_time = 0                                # 重置片段时间
         else:                            # 如果还没有开始片段计时
             self.start_segment_time = True                       # 标记为开始片段计时
@@ -63,19 +61,15 @@ class Time_tracer:
             real_segment_time = time.time() - self.segment_time                # 计算片段时间
             real_total_time = time.time() - self.start_time                    # 计算总时间
             text_display = f"该过程用时：{self._set_format_time(real_segment_time)} | 总用时：{self._set_format_time(real_total_time)} "
-            spaces, text_right = self._right_print_time(text_display)          # 右对齐显示文本
-            print(' ' * spaces + text_right, end='\r', flush=True)             # 打印文本
+            self._right_print_time_and_clear(text_display)          # 右对齐显示文本
             time.sleep(0.1)                                                    # 暂停0.1秒
-            self._clear_last_line()                                            # 清除上一次的显示
 
         while not self.start_segment_time:            # 当正在运行时, 且没有开始片段计时时
             real_total_time = time.time() - self.start_time                      # 计算总时间
             real_total_time = self._set_format_time(real_total_time)            # 格式化总时间
             text_display = f"总用时：{real_total_time} "   # 构造显示文本
-            spaces, text_right = self._right_print_time(text_display)            # 右对齐显示文本
-            print(' ' * spaces + text_right, end='\r', flush=True)               # 打印文本
+            self._right_print_time_and_clear(text_display)            # 右对齐显示文本
             time.sleep(0.1)                                                      # 暂停0.1秒
-            self._clear_last_line()                                              # 清除上一次的显示
 
     def _set_format_time(self, seconds):
         '''格式化时间'''
@@ -83,31 +77,23 @@ class Time_tracer:
         minutes, seconds = divmod(remainder, 60)  # 计算分钟和剩余秒数
         return f"{int(hours):02d}:{int(minutes):02d}:{seconds:.2f}"
 
-    def _right_print_time(self, text_display):
+    def _right_print_time_and_clear(self, text_display):
         '''右对齐显示时间'''
         columns = shutil.get_terminal_size().columns    # 获取终端宽度
-        text_length = len(text_display + 5 * ' ')                 # 计算文本长度
+        text_length = len(text_display + 10 * ' ')                    # 计算文本长度
         if text_length > columns:                       # 如果文本长度超过终端宽度
-            text_right = text_display[:columns - 4] + "..."             # 截断文本并添加省略号
-            spaces = max(0, columns - text_length)                  # 计算需要填充的空格数
+            text_right = text_display[:columns - 4] + "..."          # 截断文本并添加省略号
         else:                                           # 如果文本长度小于等于终端宽度
-            spaces = max(0, columns - text_length)                  # 计算需要填充的空格数
             text_right = text_display
-        return spaces, text_right
-
-    def _clear_last_line(self):
-        '''清除终端最后一行'''
-        print('\r' + ' ' * shutil.get_terminal_size().columns, end='\r', flush=True)  # 清除上一次的显示
-        sys.stdout.flush()  # 确保立即显示
-        print('\r' + ' ' * shutil.get_terminal_size().columns, end='\r', flush=True)  # 清除上一次的显示
-        sys.stdout.flush()  # 确保立即显示
+        spaces = max(0, columns - text_length)                       # 计算需要填充的空格数
+        print('\r' + ' ' * columns + '\r' + ' ' * spaces + text_right, end='', flush=True)  # 打印文本
 
     def record(self):
         '''记录运行时间'''
-        print("所有过程运行时间:")                                # 显示所有运行时间片段
+        print(f"\n {6*' '} 所有过程运行时间:")                                # 显示所有运行时间片段
         for i, segment in enumerate(self.time_segments, 1):      # 遍历记录列表
-            print(f"  过程 {i} 用时: {self._set_format_time(segment)}")     # 显示每个运行时间片段
-        print(f"所有过程总用时: {self._set_format_time(sum(self.time_segments))}")   # 显示所有运行时间片段的总时间
+            print(f" {10*' '} 过程 {i} 用时: {self._set_format_time(segment)}")     # 显示每个运行时间片段
+        print(f" {8*' '} 所有过程总用时: {self._set_format_time(sum(self.time_segments))}\n")   # 显示所有运行时间片段的总时间
 
     def clear_history(self, time_segments = True, 
                             total_time = True, 
@@ -135,19 +121,19 @@ class Time_tracer:
 
 if __name__ == '__main__':
     time_tracer = Time_tracer()
-    print("开始计时")
+    print("\n开始计时")
     time_tracer.start()
     time.sleep(2)
-    print("过程1开始")
+    print("\n过程1开始")
     time_tracer.sets()
     time.sleep(2)
     time_tracer.sets()
-    print("过程1结束")
+    print("\n过程1结束")
     time.sleep(2)
-    print(" 过程2开始")
+    print("\n过程2开始")
     time_tracer.sets()
     time.sleep(2)
     time_tracer.sets()
-    print(" 过程2结束")
+    print("\n过程2结束")
     time.sleep(2)
     time_tracer.stop()
