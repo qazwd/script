@@ -1,0 +1,6 @@
+.pyc
+.pyc  -> py
+
+.lib  （power shell）
+单个：dumpbin /exports your_lib_file.lib
+文件夹下所有：dumpbin /all your_lib_file.lib
