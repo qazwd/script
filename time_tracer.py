@@ -54,6 +54,11 @@ class Time_tracer:
         elif not self.running:       # 如果时间并没有开始
             # 抛出异常
             raise ValueError("计时还未开始！")
+        
+    def _start_display_thread(self):
+        if not self._display_thread or not self._display_thread.is_alive():  # 检查线程是否存在且存活
+            self._display_thread = threading.Thread(target=self._real_time_display, daemon=True)
+            self._display_thread.start()
 
     def _real_time_display(self):
         '''实时显示程序运行时间'''
@@ -82,10 +87,7 @@ class Time_tracer:
     def _right_print_time_and_clear(self, text_display, text_length):
         '''右对齐显示时间'''
         columns = shutil.get_terminal_size().columns    # 获取终端宽度
-        if text_length > columns:                       # 如果文本长度超过终端宽度
-            text_right = text_display[:columns - 4] + "..."          # 截断文本并添加省略号
-        else:                                           # 如果文本长度小于等于终端宽度
-            text_right = text_display
+        text_right = text_display[:columns - 4] + "..." if len(text_display) > columns else text_display
         spaces = max(0, columns - text_length)                       # 计算需要填充的空格数
         print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_right, end='', flush=True)
 
@@ -96,31 +98,23 @@ class Time_tracer:
             print(f" {10*' '} 过程 {i} 用时: {self._set_format_time(segment)}")                     # 显示每个运行时间片段
         print(f" {8*' '} 所有过程总用时: {self._set_format_time(sum(self.time_segments))}\n")   # 显示所有运行时间片段的总时间
 
-    def clear_history(self, time_segments = True, 
-                            total_time = True, 
-                            start_time = True, 
-                            segment_time = True, 
-                            time_segment = True, 
-                            running = True, 
-                            start_segment_time = True):
+    def clear_history(self, **kwargs):
         '''清除历史记录'''
-        if time_segments:                # 如果需要清除时间片段记录
-            self.time_segments = []          # 重置记录列表
-        if total_time:                   # 如果需要清除总时间记录
-            self.total_time = 0              # 重置总时间
-        if start_time:                   # 如果需要清除开始时间记录
-            self.start_time = 0              # 重置开始时间
-        if segment_time:                 # 如果需要清除片段时间记录
-            self.segment_time = 0            # 重置片段时间
-        if time_segment:                 # 如果需要清除片段时间记录
-            self.time_segment = 0            # 重置片段时间
-        if running:                      # 如果需要清除运行状态记录
-            self.running = False             # 重置运行状态
-        if start_segment_time:           # 如果需要清除片段状态记录
-            self.start_segment_time = False  # 重置片段状态
+        defaults = {
+            'time_segments': True,
+            'total_time': True,
+            'start_time': True,
+            'segment_time': True,
+            'time_segment': True,
+            'running': True,
+            'start_segment_time': True
+        }
+        for attr, value in {**defaults, **kwargs}.items():
+            if value:
+                setattr(self, attr, [] if attr == 'time_segments' else False if attr in ('running', 'start_segment_time') else 0)
 
 # 测试代码
-#'''
+'''
 if __name__ == '__main__':
     time_tracer = Time_tracer()
     print("\n开始计时")
@@ -139,4 +133,4 @@ if __name__ == '__main__':
     print("\n过程2结束")
     time.sleep(2)
     time_tracer.stop()
-#'''
+'''
