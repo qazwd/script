@@ -76,7 +76,7 @@ class Time_tracer:
             text_display = f"总用时：{real_total_time}"                         # 构造显示文本
             text_length = len(text_display + 4 * ' ')                          # 计算文本长度
             self._right_print_time_and_clear(text_display, text_length)        # 右对齐显示文本
-            time.sleep(0.5)
+            time.sleep(0.1)
 
     def _set_format_time(self, seconds):
         '''格式化时间'''
@@ -93,10 +93,12 @@ class Time_tracer:
 
     def record(self):
         '''记录运行时间'''
-        print(f"\n {6*' '} 所有过程运行时间:")                                                  # 显示所有运行时间片段
+        print(f"{13*' '}***------------ 运行记录 ------------***")
+        print(f"\n {16*' '} 所有过程运行时间:")                                                  # 显示所有运行时间片段
         for i, segment in enumerate(self.time_segments, 1):                                    # 遍历记录列表
-            print(f" {10*' '} 过程 {i} 用时: {self._set_format_time(segment)}")                     # 显示每个运行时间片段
-        print(f" {8*' '} 所有过程总用时: {self._set_format_time(sum(self.time_segments))}\n")   # 显示所有运行时间片段的总时间
+            print(f" {20*' '} 过程 {i} 用时: {self._set_format_time(segment)}")                     # 显示每个运行时间片段
+        print(f" {18*' '} 所有过程总用时: {self._set_format_time(sum(self.time_segments))}\n")   # 显示所有运行时间片段的总时间
+        print(f"{13*' '}***----------------------------------***")
 
     def clear_history(self, **kwargs):
         '''清除历史记录'''
@@ -114,7 +116,7 @@ class Time_tracer:
                 setattr(self, attr, [] if attr == 'time_segments' else False if attr in ('running', 'start_segment_time') else 0)
 
 # 测试代码
-'''
+#'''
 if __name__ == '__main__':
     time_tracer = Time_tracer()
     print("\n开始计时")
@@ -133,4 +135,4 @@ if __name__ == '__main__':
     print("\n过程2结束")
     time.sleep(2)
     time_tracer.stop()
-'''
+#'''
