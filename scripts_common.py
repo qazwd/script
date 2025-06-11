@@ -26,7 +26,7 @@ def folder_info(root_dir):
     from collections import deque
     queue = deque([(root_dir, 0)])
     
-    print("******--------------> 文件夹统计工具 <--------------******")
+    print("\n******--------------> 文件夹统计工具 <--------------******")
     print(f"\n开始遍历目录: {root_dir}")
     print(f"="*50)
     
@@ -103,7 +103,7 @@ def folder_info(root_dir):
     else:
         print("    无任何文件\n")
 
-    print("******--------------> 文件夹统计工具 <--------------******")
+    print("******--------------> 文件夹统计工具 <--------------******\n")
     
     return total_files, dict(total_file_types)
 
@@ -205,7 +205,7 @@ def check_image_integrity(folder_path):
 if __name__ == "__main__":
     '''
     #path = input("请输入要遍历的文件夹路径: ")
-    path = r"D:\hh\class\J\bwork2\干香菇数据集"
+    path = r"D:"
     if os.path.isdir(path):
         folder_info(path)
     else:
