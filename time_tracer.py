@@ -54,11 +54,6 @@ class Time_tracer:
         elif not self.running:       # 如果时间并没有开始
             # 抛出异常
             raise ValueError("计时还未开始！")
-        
-    def _start_display_thread(self):
-        if not self._display_thread or not self._display_thread.is_alive():  # 检查线程是否存在且存活
-            self._display_thread = threading.Thread(target=self._real_time_display, daemon=True)
-            self._display_thread.start()
 
     def _real_time_display(self):
         '''实时显示程序运行时间'''
