@@ -65,7 +65,7 @@ def folder_info(root_dir):
         if dir_names:
             print(f"{indent}│   ├── 文件夹列表:")
             # 每行最多显示5个文件夹名
-            per_line = 5
+            per_line = 10
             lines = math.ceil(len(dir_names) / per_line)
             
             for i in range(lines):
