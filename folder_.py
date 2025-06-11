@@ -221,8 +221,7 @@ if __name__ == "__main__":
         max_depth=3, 
         include_hidden=False
     )
-    print("--------------")
-
+    
     # 方式2: 只获取摘要信息（不打印）
     total_files = analyzer.get_total_files()
     file_types = analyzer.get_file_type_distribution()
@@ -231,16 +230,14 @@ if __name__ == "__main__":
     print("文件类型分布:")
     for ftype, count in file_types.items():
         print(f"  {ftype}: {count}")
-    print("--------------")
     
     # 方式3: 获取目录结构数据
-    structure = analyzer.get_directory_structure(max_depth=2, include_hidden=True)
+    structure = analyzer.get_directory_structure(max_depth=2)
     print("\n目录结构摘要:")
     print(f"根目录: {structure['path']}")
     print(f"一级子目录数: {len(structure['directories'])}")
     print(f"根目录下文件数: {len(structure['files'])}")
-    print("--------------")
     
     # 方式4: 仅统计根目录
-    root_stats = DirectoryAnalyzer(path)
+    root_stats = DirectoryAnalyzer("/path/to/your/directory")
     root_stats.analyze(max_depth=0, verbose=True)
