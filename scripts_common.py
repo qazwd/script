@@ -203,13 +203,14 @@ def check_image_integrity(folder_path):
 
 
 if __name__ == "__main__":
+    '''
     #path = input("请输入要遍历的文件夹路径: ")
     path = r"D:\hh\class\J\bwork2\干香菇数据集"
     if os.path.isdir(path):
         folder_info(path)
     else:
         print("错误：提供的路径不是一个有效的目录")
-
+'''
     print("-" * 50)  # 分隔线
     '''
     # 构建文件路径
