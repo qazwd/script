@@ -1,86 +1,112 @@
 import os
 from collections import defaultdict
+import math
 
-def first_folders_list(folder_path):
+def folder_info(root_dir):
     """
-    统计指定文件夹下子文件夹的数量、子文件夹名称、文件数量以及每种文件的数量。
+    遍历指定目录下的所有文件夹，统计每个文件夹下的文件数量和文件类型分布。
+    输出结果包括：
+    1. 文件夹的层级结构
+    2. 每个文件夹下的文件数量
+    3. 文件类型的分布
+    4. 总文件数量
+    5. 文件类型的总分布
 
     参数:
-    folder_path (str): 要检查的文件夹的路径。
+    root_dir (str): 要遍历的根目录路径
 
     返回:
-    tuple: 包含四个元素，
-           1. 子文件夹的数量；
-           2. 子文件夹名称的列表；
-           3. 文件夹中的文件数量；
-           4. 字典，键为文件扩展名，值为该扩展名文件的数量。
+    tuple: 包含总文件数量和文件类型分布的元组
     """
-    # 初始化一个空列表来存储子文件夹的名称
-    folder_names = []
-    # 初始化文件数量
-    file_count = 0
-    # 初始化每种文件数量的字典
-    file_type_count = defaultdict(int)
-    # 检查路径是否存在
-    if os.path.exists(folder_path):
-        # 遍历指定路径下的所有条目
-        for entry in os.listdir(folder_path):
-            entry_path = os.path.join(folder_path, entry)
-            # 检查条目是否为文件夹
-            if os.path.isdir(entry_path):
-                folder_names.append(entry)
-            # 检查条目是否为文件
-            elif os.path.isfile(entry_path):
+    # 初始化总统计变量
+    total_files = 0
+    total_file_types = defaultdict(int)
+    
+    # 使用队列进行广度优先遍历
+    from collections import deque
+    queue = deque([(root_dir, 0)])
+    
+    print("******--------------> 文件夹统计工具 <--------------******")
+    print(f"\n开始遍历目录: {root_dir}")
+    print(f"="*50)
+    
+    while queue:
+        current_dir, level = queue.popleft()
+        items = os.listdir(current_dir)
+        
+        # 初始化当前层统计
+        dir_names = []  # 存储文件夹名称
+        file_count = 0
+        current_file_types = defaultdict(int)
+        
+        # 处理当前目录下的所有项目
+        for item in items:
+            path = os.path.join(current_dir, item)
+            
+            if os.path.isdir(path):
+                dir_names.append(item)
+                queue.append((path, level + 1))
+            else:
                 file_count += 1
-                file_extension = os.path.splitext(entry)[1].lower()
-                file_type_count[file_extension] += 1
-    # 返回子文件夹的数量、名称列表、文件数量和每种文件的数量
-    return len(folder_names), folder_names, file_count, dict(file_type_count)
+                # 提取文件扩展名（类型）
+                _, ext = os.path.splitext(item)
+                file_type = ext.lower() if ext else '无扩展名'
+                current_file_types[file_type] += 1
+                total_file_types[file_type] += 1
+        
+        total_files += file_count
+        
+        # 输出当前层信息
+        indent = "│   " * level
+        print(f"{indent}├── [层级 {level}] {current_dir}")
+        print(f"{indent}│   ├── 文件夹数量: {len(dir_names)}")
+        
+        # 输出文件夹名称（每行最多显示5个）
+        if dir_names:
+            print(f"{indent}│   ├── 文件夹列表:")
+            # 每行最多显示5个文件夹名
+            per_line = 5
+            lines = math.ceil(len(dir_names) / per_line)
+            
+            for i in range(lines):
+                start = i * per_line
+                end = start + per_line
+                dirs_line = ", ".join(dir_names[start:end])
+                print(f"{indent}│   │   ├── {dirs_line}")
+        else:
+            print(f"{indent}│   ├── 文件夹列表: 无")
+        
+        print(f"{indent}│   ├── 文件数量: {file_count}")
+        
+        if file_count > 0:
+            print(f"{indent}│   ├── 文件类型统计:")
+            for ftype, count in current_file_types.items():
+                print(f"{indent}│   │   ├── {ftype}: {count}个")
+        else:
+            print(f"{indent}│   ├── 文件类型统计: 无文件")
+        
+        # 显示下一层指示器
+        if dir_names:
+            print(f"{indent}│\n{indent}▼")
+        else:
+            print(f"{indent}│")
+    
+    # 输出最终统计结果
+    print("\n" + "="*50)
+    print(f"遍历完成！总计统计:")
+    print(f"├── 总文件数量: {total_files}")
+    print(f"└── 文件类型分布:")
+    
+    if total_files > 0:
+        for ftype, count in sorted(total_file_types.items(), key=lambda x: x[1], reverse=True):
+            print(f"    ├── {ftype}: {count}个\n")
+    else:
+        print("    无任何文件\n")
 
+    print("******--------------> 文件夹统计工具 <--------------******")
+    
+    return total_files, dict(total_file_types)
 
-import os
-from collections import defaultdict
-
-def second_folders_list(folder_path):
-    """
-    分析指定文件夹，返回子文件夹名称、总文件数量以及每个子文件夹的文件数量和每种文件的数量。
-
-    参数:
-    folder_path (str): 要分析的文件夹路径。
-
-    返回:
-    tuple: 包含三个元素，
-           1. 子文件夹名称列表；
-           2. 文件夹中的总文件数量；
-           3. 字典，键为子文件夹名称，值为另一个字典，包含该子文件夹的总文件数量和每种文件的数量。
-    """
-    subfolder_names = []
-    total_file_count = 0
-    subfolder_stats = {}
-
-    if os.path.exists(folder_path):
-        # 遍历指定路径下的所有条目
-        for entry in os.listdir(folder_path):
-            entry_path = os.path.join(folder_path, entry)
-            if os.path.isdir(entry_path):
-                subfolder_names.append(entry)
-                file_count = 0
-                file_type_count = defaultdict(int)
-                # 遍历子文件夹中的所有条目
-                for root, dirs, files in os.walk(entry_path):
-                    for file in files:
-                        file_count += 1
-                        file_extension = os.path.splitext(file)[1].lower()
-                        file_type_count[file_extension] += 1
-                subfolder_stats[entry] = {
-                    "total_files": file_count,
-                    "file_types": dict(file_type_count)
-                }
-                total_file_count += file_count
-            elif os.path.isfile(entry_path):
-                total_file_count += 1
-
-    return subfolder_names, total_file_count, subfolder_stats
 
 import os
 
@@ -177,35 +203,13 @@ def check_image_integrity(folder_path):
 
 
 if __name__ == "__main__":
-    '''
-    # 指定要检查的文件夹路径
-    folder_path = 'D:\\hh'
+    #path = input("请输入要遍历的文件夹路径: ")
+    path = r"D:\hh\class\J\bwork2\干香菇数据集"
+    if os.path.isdir(path):
+        folder_info(path)
+    else:
+        print("错误：提供的路径不是一个有效的目录")
 
-    print('-' * 50)  # 分隔线
-    print(f"检查文件夹: {folder_path}")
-    print('-' * 50)  # 分隔线
-    folder_count, folder_names, file_count, file_type_count = first_folders_list(folder_path)
-    print(f"子文件夹数量: {folder_count}")
-    print(f"子文件夹名称: {folder_names}")
-    print(f"文件夹中的文件数量: {file_count}")
-    print("每种文件的数量:")
-    for extension, count in file_type_count.items():
-        print(f"  {extension}: {count}")
-'''
-    print("-" * 50)  # 分隔线
-    '''
-    folder_path = "your_folder_path"
-    print("-" * 50)  # 分隔线
-    print(f"检查文件夹: {folder_path}")
-    subfolder_names, total_file_count, subfolder_stats = second_folders_list(folder_path)
-    print(f"子文件夹名称: {subfolder_names}")
-    print(f"文件夹中的总文件数量: {total_file_count}")
-    print("每个子文件夹中的文件统计信息:")
-    for subfolder, stats in subfolder_stats.items():
-        print(f"  子文件夹: {subfolder}")
-        print(f"    总文件数量: {stats['total_files']}")
-        print(f"    每种文件的数量: {stats['file_types']}")
-'''
     print("-" * 50)  # 分隔线
     '''
     # 构建文件路径
