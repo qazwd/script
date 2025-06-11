@@ -231,7 +231,7 @@ class DirectoryAnalyzer:
 # 使用示例
 if __name__ == "__main__":
     path = 'D:\\hh\\code'
-    '''
+
     # 创建分析器实例
     analyzer = DirectoryAnalyzer(path)
     
@@ -264,25 +264,3 @@ if __name__ == "__main__":
     for stat in layer_stats:
         print(f"[层级 {stat['level']}] {stat['path']}")
         print(f"  文件夹: {stat['dir_count']}个, 文件: {stat['file_count']}个")
-'''
-    # 基本使用
-    analyzer = DirectoryAnalyzer(path)
-    analyzer.analyze()  # 完整分析并打印结果
-
-    # 快速获取信息
-    dir_count, file_count, file_types = analyzer.quick_scan()
-    print(f"根目录: {dir_count}个文件夹, {file_count}个文件")
-
-    # 获取统计摘要
-    total_files, file_types = analyzer.get_summary()
-    print(f"总文件数: {total_files}")
-
-    # 获取最常见文件类型
-    top_types = analyzer.get_top_file_types(3)
-    print("最常见文件类型:", top_types)
-
-    # 获取特定层级信息
-    level1_stats = analyzer.get_layer_stats(level=1)
-    for stat in level1_stats:
-        print(f"层级1目录: {stat['path']}")
-        print(f"  包含 {stat['dir_count']}个子文件夹, {stat['file_count']}个文件")
