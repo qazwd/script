@@ -116,7 +116,7 @@ class Time_tracer:
                 setattr(self, attr, [] if attr == 'time_segments' else False if attr in ('running', 'start_segment_time') else 0)
 
 # 测试代码
-#'''
+'''
 if __name__ == '__main__':
     time_tracer = Time_tracer()
     print("\n开始计时")
@@ -135,4 +135,4 @@ if __name__ == '__main__':
     print("\n过程2结束")
     time.sleep(2)
     time_tracer.stop()
-#'''
+'''
