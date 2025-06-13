@@ -2,7 +2,7 @@ import os
 from collections import defaultdict, deque
 import math
 
-def _get_folder_name(self):
+def _get_folder_name(folder_path):
         # 规范化路径（自动处理末尾分隔符和跨平台格式）
         normalized_path = os.path.normpath(folder_path)
         # 直接获取最后一段名称
