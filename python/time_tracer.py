@@ -69,7 +69,7 @@ class Time_tracer:
             real_total_time = time.time() - self.start_time                    # 计算总时间
             real_total_time = self._set_format_time(real_total_time)           # 格式化总时间
             text_display = f"总用时：{real_total_time}"                         # 构造显示文本
-            text_length = len(text_display + 4 * ' ')                          # 计算文本长度
+            text_length = len(text_display + 5 * ' ')                          # 计算文本长度
             self._right_print_time_and_clear(text_display, text_length)        # 右对齐显示文本
             time.sleep(0.1)
 
@@ -93,7 +93,7 @@ class Time_tracer:
         for i, segment in enumerate(self.time_segments, 1):                                    # 遍历记录列表
             print(f" {20*' '} 过程 {i} 用时: {self._set_format_time(segment)}")                     # 显示每个运行时间片段
         print(f" {18*' '} 所有过程总用时: {self._set_format_time(sum(self.time_segments))}\n")   # 显示所有运行时间片段的总时间
-        print(f"{13*' '}***----------------------------------***")
+        print(f"{12*' '}***----------------------------------***")
 
     def clear_history(self, **kwargs):
         '''清除历史记录'''
