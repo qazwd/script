@@ -9,21 +9,8 @@ def _get_folder_name(self):
         return os.path.basename(normalized_path)
 
 def FolderAnalysis(folder_path, verbose=0, max_depth=None, hidden=False, Logo=False):
-    """
-    分析指定文件夹的结构和信息。
-    :param folder_path: 要分析的文件夹路径
-    :param verbose: 输出详细程度，0为详细，1为粗略，2为仅错误
-    :param max_depth: 最大遍历深度，None表示不限制
-    :param hidden: 是否包含隐藏文件和文件夹，默认为False
-    :param Logo: 是否打印Logo信息，默认为False
-    :return: 返回总文件数和文件类型分布
-    """
     print("\n******--------------> 文件夹分析工具 <--------------******")
-
-    # 是否打印 Logo
-    if not Logo:
-        print()
-    else:
+    if Logo:
         print("******----------------> 作者：qhk <----------------******")
         print("******---------------> 版本：1.0.0 <---------------******")
         print("******--------> 功能：分析文件夹结构和信息 <--------******\n")
@@ -38,14 +25,11 @@ def FolderAnalysis(folder_path, verbose=0, max_depth=None, hidden=False, Logo=Fa
     # 使用队列进行广度优先遍历
     queue = deque([(folder_path, 0)])
     
-    # 如果verbose为0或1，打印开始信息
     if verbose == 0 or verbose == 1:
         print(f"开始遍历文件夹: {folder}\n" + "="*50)
 
-    # 遍历队列（分析文件结构）
     while queue:
-        current_dir, level = queue.popleft()    # 从队列中取出当前目录和层级
-
+        current_dir, level = queue.popleft()
         # 检查是否达到最大深度
         if max_depth is not None and level > max_depth:
             continue
@@ -75,60 +59,52 @@ def FolderAnalysis(folder_path, verbose=0, max_depth=None, hidden=False, Logo=Fa
 
         # 遍历当前层项目
         for item in items:
-
             # 跳过隐藏文件和文件夹（如果需要）
             if not hidden and item.startswith('.'):
                 continue
             path = os.path.join(current_dir, item)
-
-            # 判断是否为文件夹
             if os.path.isdir(path):
-                folder_names.append(item)        # 存储文件夹名称
-                queue.append((path, level + 1))  # 加入队列，层级加一
+                folder_names.append(item)  # 存储文件夹名称
+                queue.append((path, level + 1))
             else:
                 file_count += 1
                 _folder_name, extension = os.path.splitext(item)
                 file_type = extension.lower() if extension else '无扩展名'
-                current_file_types[file_type] += 1  # 增加当前文件类型的数量
-                total_file_types[file_type] += 1    # 增加总文件类型的数量
-        total_files += file_count  # 累加总文件数量
+                current_file_types[file_type] += 1
+                total_file_types[file_type] += 1
+        total_files += file_count
 
         # 如果verbose为0，打印当前层信息
         if verbose == 0:
             # 输出当前层信息
-            indent = "│   " * level                                     # 根据层级生成缩进
-            print(f"{indent}├── [层级 {level}] {current_dir}")           # 输出当前文件夹的路径和层级
-            print(f"{indent}│   ├── 文件夹数量: {len(folder_names)}")    # 输出当前文件夹中的文件夹数量
-            print(f"{indent}│   ├── 文件数量: {file_count}")             # 输出当前文件夹中的文件数量
-
+            indent = "│   " * level  # 根据层级生成缩进
+            print(f"{indent}├── [层级 {level}] {current_dir}")  # 输出当前文件夹的路径和层级
+            print(f"{indent}│   ├── 文件夹数量: {len(folder_names)}")  # 输出当前文件夹中的文件夹数量
+            print(f"{indent}│   ├── 文件数量: {file_count}")  # 输出当前文件夹中的文件数量
             # 输出文件夹名称（每行最多显示10个）
             if folder_names:  # 如果有文件夹
-                print(f"{indent}│   ├── 文件夹名称:")             # 输出文件夹名称的提示
-                per_line = 10                                     # 每行显示的文件夹数量
-                lines = math.ceil(len(folder_names) / per_line)   # 计算需要的行数
+                print(f"{indent}│   ├── 文件夹名称:")  # 输出文件夹名称的提示
+                per_line = 10  # 每行显示的文件夹数量
+                lines = math.ceil(len(folder_names) / per_line)  # 计算需要的行数
                 for i in range(lines):  # 遍历每一行
-                    start = i * per_line                               # 计算当前行的起始索引
-                    end = start + per_line                             # 计算当前行的结束索引
+                    start = i * per_line  # 计算当前行的起始索引
+                    end = start + per_line  # 计算当前行的结束索引
                     folders_line = ', '.join(folder_names[start:end])  # 拼接当前行的文件夹名称
-                    print(f"{indent}│   │   ├── {folders_line}")       # 输出当前行的文件夹名称
+                    print(f"{indent}│   │   ├── {folders_line}")  # 输出当前行的文件夹名称
             else:  # 如果没有文件夹
-                print(f"{indent}│   ├── 文件夹名称: 无")          # 输出无文件夹的提示
-
-            # 输出文件类型分布
-            if file_count > 0:
-                print(f"{indent}|   |—— 文件类型分布:")                  # 输出文件类型分布的提示
-                for file_type, count in current_file_types.items():     # 遍历当前文件夹中的文件类型和数量
+                print(f"{indent}│   ├── 文件夹名称: 无")  # 输出无文件夹的提示
+            if file_count > 0:  # 如果当前文件夹中有文件
+                print(f"{indent}|   |—— 文件类型分布:")  # 输出文件类型分布的提示
+                for file_type, count in current_file_types.items():  # 遍历当前文件夹中的文件类型和数量
                     print(f"{indent}│   │   ├── {file_type}: {count}")  # 输出当前文件类型和数量
-            else:
-                print(f"{indent}│   │   ├── 无文件")                     # 输出无文件的提示
-
-            # 输出文件夹结束提示
+            else:  # 如果当前文件夹中没有文件
+                print(f"{indent}│   │   ├── 无文件")  # 输出无文件的提示
             if folder_names:
                 print(f"{indent}\n{indent}▼")  # 输出文件夹展开的提示
             else:
-                print(f"{indent}|")            # 输出文件夹结束的提示
+                print(f"{indent}|")  # 输出文件夹结束的提示
 
-        analyzed = True         # 标记已分析过目录
+        analyzed = True  # 标记已分析过目录
         
     # 输出总统计信息
     if verbose == 0 or verbose == 1:
@@ -152,7 +128,7 @@ def FolderAnalysis(folder_path, verbose=0, max_depth=None, hidden=False, Logo=Fa
 if __name__ == "__main__":
     
     #folder_path = input("请输入要遍历的文件夹路径: ")
-    folder_path = 'D:\\hh\\code'                                   # 替换为您要分析的文件夹路径
+    folder_path = 'D:\\hh\\code'  # 替换为您要分析的文件夹路径
     
     # 分析目录结构，verbose=0 打印详细信息，verbose=1 粗略打印信息
     FolderAnalysis(
