@@ -1,3 +1,4 @@
+/*
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -202,7 +203,7 @@ private:
         std::cout << std::string(12, ' ') << "***----------------------------------***" << std::endl;
     }
 };
-
+/*
 // 测试代码
 int main() {
     TimeTracer tracer;
@@ -240,4 +241,4 @@ int main() {
     }
     
     return 0;
-}
+}*/
