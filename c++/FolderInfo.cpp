@@ -1,4 +1,4 @@
-/*
+///*
 #include <iostream>
 #include <filesystem>
 #include <queue>
@@ -126,7 +126,7 @@ std::pair<int, std::map<std::string, int>> FolderAnalysis(
                     std::cout << indent << "│   │   ├── " << type << ": " << count << "\n";
                 }
             } else {
-                std::cout << indent << "│   │   ├── 无文件\n";
+                std::cout << indent << "│   ├── 无文件\n";
             }
 
             if (!folder_names.empty()) {
@@ -151,7 +151,7 @@ std::pair<int, std::map<std::string, int>> FolderAnalysis(
                 std::cout << "    ├── " << type << ": " << count << "\n";
             }
         } else {
-            std::cout << "    ├── 无文件\n";
+            std::cout << "├── 无文件\n";
         }
     }
 
@@ -159,7 +159,7 @@ std::pair<int, std::map<std::string, int>> FolderAnalysis(
 
     return {total_files, total_file_types};
 }
-/*
+
 int main() {
     std::string folder_path = "D:\\hh\\code";
     auto [total_files, file_types] = FolderAnalysis(
@@ -172,4 +172,4 @@ int main() {
     
     return 0;
 }
-*/
+//*/

@@ -120,7 +120,7 @@ def FolderAnalysis(folder_path, verbose=0, max_depth=None, hidden=False, Logo=Fa
                 for file_type, count in current_file_types.items():     # 遍历当前文件夹中的文件类型和数量
                     print(f"{indent}│   │   ├── {file_type}: {count}")  # 输出当前文件类型和数量
             else:
-                print(f"{indent}│   │   ├── 无文件")                     # 输出无文件的提示
+                print(f"{indent}│   │── 无文件")                     # 输出无文件的提示
 
             # 输出文件夹结束提示
             if folder_names:
@@ -141,7 +141,7 @@ def FolderAnalysis(folder_path, verbose=0, max_depth=None, hidden=False, Logo=Fa
             for file_type, count in total_file_types.items():
                 print(f"    ├── {file_type}: {count}")
         else:
-            print("    ├── 无文件")
+            print("├── 无文件")
         
     print("\n******------------> 文件夹内容统计工具 <------------******\n")
 

@@ -289,7 +289,7 @@ AnalysisResult folder_analysis(const char* folder_path, int verbose, int max_dep
                            result.file_types[i].ext, result.file_types[i].count);
                 }
             } else {
-                printf("%s│   │   ├── 无文件\n", indent);
+                printf("%s│   ├── 无文件\n", indent);
             }
             
             // 输出文件夹结束提示
@@ -317,7 +317,7 @@ AnalysisResult folder_analysis(const char* folder_path, int verbose, int max_dep
                 printf("    ├── %s: %d\n", result.file_types[i].ext, result.file_types[i].count);
             }
         } else {
-            printf("    ├── 无文件\n");
+            printf("├── 无文件\n");
         }
     }
     
