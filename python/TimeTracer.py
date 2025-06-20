@@ -32,7 +32,7 @@ class Time_tracer:
             self.time_segment = time.time() - self.segment_time  # 计算本次运行时间
             self.time_segments.append(self.time_segment)         # 记录本次运行时间
             text_display = f"该过程用时：{self._set_format_time(self.time_segment)} "
-            text_length = len(text_display + 6 * ' ')                    # 计算文本长度
+            text_length = len(text_display + 5 * ' ')                    # 计算文本长度
             self._right_print_time_and_clear(text_display, text_length)  # 右对齐显示文本
             self.segment_time = 0                                # 重置片段时间
         else:                            # 如果还没有开始片段计时
@@ -69,7 +69,7 @@ class Time_tracer:
             real_total_time = time.time() - self.start_time                    # 计算总时间
             real_total_time = self._set_format_time(real_total_time)           # 格式化总时间
             text_display = f"总用时：{real_total_time}"                         # 构造显示文本
-            text_length = len(text_display + 5 * ' ')                          # 计算文本长度
+            text_length = len(text_display + 4 * ' ')                          # 计算文本长度
             self._right_print_time_and_clear(text_display, text_length)        # 右对齐显示文本
             time.sleep(0.1)
 
