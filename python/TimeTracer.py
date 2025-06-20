@@ -92,7 +92,7 @@ class TimeTracer:
         print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_right, end='', flush=True)
 
     def records(self):
-        '''记录运行时间'''
+        '''显示运行片段'''
         print(f"{13*' '}***------------ 运行记录 ------------***")
         print(f"\n {16*' '} 所有过程运行时间:")                                                  # 显示所有运行时间片段
         for i, segment in enumerate(self.time_segments, 1):                                    # 遍历记录列表
