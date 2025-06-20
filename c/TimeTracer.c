@@ -1,3 +1,5 @@
+//
+/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -118,7 +120,7 @@ double get_current_time() {
             free(total_time);
             
             // 右对齐显示
-            int text_length = strlen(text_display);
+            int text_length = strlen(text_display);// - 2;
             printf("\r");
             for (int i = 0; i < get_terminal_columns() - text_length; i++) {
                 printf(" ");
@@ -364,7 +366,8 @@ void TimeTracer_clear_history(TimeTracer* tracer, ClearConfig config) {
         pthread_mutex_unlock(&tracer->mutex);
     #endif
 }
-/*
+
+
 // 测试代码
 int main() {
     TimeTracer tracer;
@@ -401,4 +404,4 @@ int main() {
     
     return 0;
 }
-*/
+//*/
