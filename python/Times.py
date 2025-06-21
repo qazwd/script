@@ -77,6 +77,8 @@ class TimeTracer:
                 text_length = len(text_display + 4 * ' ')                          # 计算文本长度
                 self._right_print_time_and_clear(text_display, text_length)        # 右对齐显示文本
                 time.sleep(0.1)
+        else:
+            raise ValueError("无法实时显示")
 
     def _set_format_time(self, seconds):
         '''格式化时间'''
