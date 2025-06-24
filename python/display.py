@@ -147,7 +147,7 @@ class RunningAnimation:
         self.interval = interval                  # 动画间隔
         self.is_running = False                   # 是否正在运行
         self.thread = None                        # 线程
-        self.clear()                             # 清除输出
+        self.current_line = shutil.get_terminal_size().lines  # 记录当前动画所在行
 
     def start(self):
         if not self.is_running:
@@ -159,33 +159,21 @@ class RunningAnimation:
         self.is_running = False
         if self.thread and self.thread.is_alive():
             self.thread.join(timeout=1)  # 等待线程结束，最多等待1秒
-            self.clear()  # 清除输出
+        # 清除最后显示的动画字符
+        columns = shutil.get_terminal_size().columns
+        print(f"\033[{self.current_line};{columns}H ", end='', flush=True)
 
     def _run_animation(self):
         while self.is_running:
             for char in self.run_chars:
-                # 获取终端尺寸
                 columns = shutil.get_terminal_size().columns
                 lines = shutil.get_terminal_size().lines
-                # 构造显示文本
-                text_display = char
-                text_length = len(text_display)
-                # 计算需要填充的空格数
-                spaces = max(0, columns - text_length)
-                # 移动光标到终端底部右侧并显示动画字符
-                #print(f"\033[{lines};1H\033[2K\r" + ' ' * spaces + text_display, end='', flush=True)
-                print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_display, end='', flush=True)
+                # 确保 current_line 不超过终端行数
+                if self.current_line > lines:
+                    self.current_line = lines
+                # 移动到终端底部右侧位置
+                print(f"\033[{self.current_line};{columns}H{char}", end='', flush=True)
                 time.sleep(self.interval)
-
-    def clear(self):
-        """清除动画输出"""
-        #lines = shutil.get_terminal_size().lines
-        columns = shutil.get_terminal_size().columns
-        # 计算需要填充的空格数
-        spaces = max(0, columns)
-        # 移动光标到终端底部并清除该行
-        #print(f"\033[{lines};1H\033[2K\r", end='', flush=True)
-        print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces, end='', flush=True)
 
     def __enter__(self):
         """进入上下文管理器时启动动画"""
@@ -238,6 +226,8 @@ if __name__ == '__main__':
         time_tracer.sets()
         time.sleep(2)
         time_tracer.stop()
+
+print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_right, end='', flush=True)
 #'''
 # 测试动画
 #'''
