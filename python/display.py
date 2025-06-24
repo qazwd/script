@@ -14,7 +14,9 @@ class TimeTracer:
         self.running = False             # 是否正在运行
         self.record = False               # 记录函数
         self.start_segment_time = False  # 是否开始片段计时
-        self.time_segments = []          # 记录每次运行时间的列表S
+        self.time_segments = []          # 记录每次运行时间的列表
+
+        self.current_line = shutil.get_terminal_size().lines  # 记录当前显示所在行
 
     def start(self):
         '''开始计时'''
@@ -55,6 +57,7 @@ class TimeTracer:
                 self.records()                           # 显示记录
             print(f"总用时：{self._set_format_time(total_time)}")         # 显示总时间
             self.clear_history()                        # 清除历史记录
+            self._clear_display()                       # 清除显示信息
         elif not self.running:       # 如果时间并没有开始
             # 抛出异常
             raise ValueError("计时还未开始！")
@@ -89,9 +92,24 @@ class TimeTracer:
     def _right_print_time_and_clear(self, text_display, text_length):
         '''右对齐显示时间'''
         columns = shutil.get_terminal_size().columns    # 获取终端宽度
+        lines = shutil.get_terminal_size().lines  # 获取终端行数
+        # 确保 current_line 不超过终端行数
+        if self.current_line > lines:
+            self.current_line = lines
         text_right = text_display[:columns - 4] + "..." if len(text_display) > columns else text_display
-        spaces = max(0, columns - text_length)                       # 计算需要填充的空格数
-        print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_right, end='', flush=True)
+        #spaces = max(0, columns - text_length)                       # 计算需要填充的空格数
+        #print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_right, end='', flush=True)
+        # 移动到终端底部右侧位置并显示计时信息
+        print(f"\033[{self.current_line};{columns - text_length + 1}H{text_right}", end='', flush=True)
+
+    def _clear_display(self):
+        """清除显示信息"""
+        columns = shutil.get_terminal_size().columns
+        # 移动到显示位置，用空格覆盖计时信息
+        # 第一次清除
+        print(f"\033[{self.current_line};1H" + " " * columns, end='', flush=True)
+        # 第二次清除
+        print(f"\033[{self.current_line};1H" + " " * columns, end='', flush=True)
 
     def records(self):
         '''显示运行片段'''
@@ -193,8 +211,7 @@ class RunningAnimation:
 
 
 # 测试代码
-#
-'''
+#'''
 if __name__ == '__main__':
     # 方法一：
     time_tracer = TimeTracer()
@@ -227,10 +244,11 @@ if __name__ == '__main__':
         time.sleep(2)
         time_tracer.stop()
 
-print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_right, end='', flush=True)
+#print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_right, end='', flush=True)
 #'''
 # 测试动画
-#'''
+#
+'''
 if __name__ == '__main__':
     # 方法一：
     run_chars = ['|', '/', '-', '\\']
