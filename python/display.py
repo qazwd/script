@@ -129,10 +129,86 @@ class TimeTracer:
         # 让异常继续传播
         return False
 
+    def __del__(self):
+        """析构函数，确保在对象销毁时停止计时"""
+        if self.running:
+            self.stop()
+
+
+# 运行动画
+class RunningAnimation:
+    '''
+    运行动画类
+    用于在控制台实时显示运行中的动画效果，如加载、进度条等。
+    '''
+
+    def __init__(self, run_chars, interval=0.1):
+        self.run_chars = run_chars    # 动画字符
+        self.interval = interval                  # 动画间隔
+        self.is_running = False                   # 是否正在运行
+        self.thread = None                        # 线程
+        self.clear()                             # 清除输出
+
+    def start(self):
+        if not self.is_running:
+            self.is_running = True
+            self.thread = threading.Thread(target=self._run_animation, daemon=True)
+            self.thread.start()
+
+    def stop(self):
+        self.is_running = False
+        if self.thread and self.thread.is_alive():
+            self.thread.join(timeout=1)  # 等待线程结束，最多等待1秒
+            self.clear()  # 清除输出
+
+    def _run_animation(self):
+        while self.is_running:
+            for char in self.run_chars:
+                # 获取终端尺寸
+                columns = shutil.get_terminal_size().columns
+                lines = shutil.get_terminal_size().lines
+                # 构造显示文本
+                text_display = char
+                text_length = len(text_display)
+                # 计算需要填充的空格数
+                spaces = max(0, columns - text_length)
+                # 移动光标到终端底部右侧并显示动画字符
+                #print(f"\033[{lines};1H\033[2K\r" + ' ' * spaces + text_display, end='', flush=True)
+                print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_display, end='', flush=True)
+                time.sleep(self.interval)
+
+    def clear(self):
+        """清除动画输出"""
+        #lines = shutil.get_terminal_size().lines
+        columns = shutil.get_terminal_size().columns
+        # 计算需要填充的空格数
+        spaces = max(0, columns)
+        # 移动光标到终端底部并清除该行
+        #print(f"\033[{lines};1H\033[2K\r", end='', flush=True)
+        print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces, end='', flush=True)
+
+    def __enter__(self):
+        """进入上下文管理器时启动动画"""
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """离开上下文管理器时停止动画"""
+        self.stop()
+        if exc_type:
+            return False
+        return self
+        
+    def __del__(self): 
+        """析构函数，确保在对象销毁时及时清除输出"""
+        self.stop()
+
+
 # 测试代码
 #
 '''
 if __name__ == '__main__':
+    # 方法一：
     time_tracer = TimeTracer()
     print("\n开始计时")
     time_tracer.start()
@@ -150,4 +226,34 @@ if __name__ == '__main__':
     print("\n过程2结束")
     time.sleep(2)
     time_tracer.stop()
+    # 方法二：
+    with TimeTracer() as time_tracer:
+        time.sleep(2)
+        print("\n过程1开始")
+        time_tracer.sets()
+        time.sleep(2)
+        time_tracer.sets()
+        print("\n过程1结束")
+        time.sleep(2)
+        time_tracer.sets()
+        time.sleep(2)
+        time_tracer.stop()
+#'''
+# 测试动画
+#'''
+if __name__ == '__main__':
+    # 方法一：
+    run_chars = ['|', '/', '-', '\\']
+    with RunningAnimation(run_chars, interval=0.2) as anim:
+        time.sleep(5)  # 模拟长时间运行的任务
+    print("\n动画结束")
+    # 方法二：
+    run_chars = ['|', '/', '-', '\\']
+    anim = RunningAnimation(run_chars, interval=0.2)
+    anim.start()  # 启动动画
+    try:
+        time.sleep(5)  # 模拟长时间运行的任务
+    finally:
+        anim.stop()  # 确保动画停止
+    print("\n动画结束")
 #'''
