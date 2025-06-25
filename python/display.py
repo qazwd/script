@@ -165,7 +165,8 @@ class RunningAnimation:
         self.interval = interval                  # 动画间隔
         self.is_running = False                   # 是否正在运行
         self.thread = None                        # 线程
-        self.current_line = shutil.get_terminal_size().lines  # 记录当前动画所在行
+        self.current_line = None                     # 记录上一次动画所在行
+        self.start_line = shutil.get_terminal_size().lines  # 记录当前动画所在行
 
     def start(self):
         if not self.is_running:
@@ -177,22 +178,28 @@ class RunningAnimation:
         self.is_running = False
         if self.thread and self.thread.is_alive():
             self.thread.join(timeout=1)  # 等待线程结束，最多等待1秒
-        # 清除最后显示的动画字符
-        columns = shutil.get_terminal_size().columns
-        print(f"\033[{self.current_line};{columns}H ", end='', flush=True)
-
+            self._clear_line(self.current_line)  # 清除最后显示动画的行
+            
     def _run_animation(self):
         while self.is_running:
             for char in self.run_chars:
                 columns = shutil.get_terminal_size().columns
-                lines = shutil.get_terminal_size().lines
-                # 确保 current_line 不超过终端行数
-                if self.current_line > lines:
-                    self.current_line = lines
-                # 移动到终端底部右侧位置
-                print(f"\033[{self.current_line};{columns}H{char}", end='', flush=True)
+                line = shutil.get_terminal_size().lines
+
+                self.current_line = line
+
+                # 显示动画字符
+                print(f"\033[{self.current_line};{columns - len(self.run_chars) + 4}H{char}", end='', flush=True)
+
+                self._clear_line(line)
+
                 time.sleep(self.interval)
 
+    def _clear_line(self, line):
+        """清除指定行的动画字符"""
+        columns = shutil.get_terminal_size().columns
+        print(f"\033[{line};{columns - len(self.run_chars) + 4}H\033[K" + ' ', end='', flush=True)
+        
     def __enter__(self):
         """进入上下文管理器时启动动画"""
         self.start()
@@ -211,7 +218,8 @@ class RunningAnimation:
 
 
 # 测试代码
-#'''
+#
+'''
 if __name__ == '__main__':
     # 方法一：
     time_tracer = TimeTracer()
