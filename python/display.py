@@ -71,7 +71,7 @@ class TimeTracer:
                 text_display = f"该过程用时：{self._set_format_time(real_segment_time)} | 总用时：{self._set_format_time(real_total_time)} "
                 text_length = len(text_display + 10 * ' ')                         # 计算文本长度
                 self._right_print_time_and_clear(text_display, text_length)        # 右对齐显示文本
-                time.sleep(0.1)
+                time.sleep(0.2)
 
             while not self.start_segment_time and self.running:            # 当正在运行时, 且没有开始片段计时时
                 real_total_time = time.time() - self.start_time                    # 计算总时间
@@ -79,7 +79,7 @@ class TimeTracer:
                 text_display = f"总用时：{real_total_time}"                         # 构造显示文本
                 text_length = len(text_display + 4 * ' ')                          # 计算文本长度
                 self._right_print_time_and_clear(text_display, text_length)        # 右对齐显示文本
-                time.sleep(0.1)
+                time.sleep(0.2)
         else:
             raise ValueError("无法实时显示")
 
@@ -92,24 +92,24 @@ class TimeTracer:
     def _right_print_time_and_clear(self, text_display, text_length):
         '''右对齐显示时间'''
         columns = shutil.get_terminal_size().columns    # 获取终端宽度
-        lines = shutil.get_terminal_size().lines  # 获取终端行数
-        # 确保 current_line 不超过终端行数
-        if self.current_line > lines:
-            self.current_line = lines
+        line = shutil.get_terminal_size().lines  # 获取终端行数
+
+        self.current_line = line  # 更新当前行数
+
+        # 如果文本长度大于终端宽度, 则截取文本
         text_right = text_display[:columns - 4] + "..." if len(text_display) > columns else text_display
-        #spaces = max(0, columns - text_length)                       # 计算需要填充的空格数
-        #print('\033[2K\r' + ' ' * columns + '\033[2K\r' + ' ' * spaces + text_right, end='', flush=True)
+
         # 移动到终端底部右侧位置并显示计时信息
         print(f"\033[{self.current_line};{columns - text_length + 1}H{text_right}", end='', flush=True)
+        self._clear_display(line=self.current_line, text_length=text_length)  # 清除显示信息
 
-    def _clear_display(self):
+    def _clear_display(self, line=None, text_length=0):
         """清除显示信息"""
         columns = shutil.get_terminal_size().columns
-        # 移动到显示位置，用空格覆盖计时信息
-        # 第一次清除
-        print(f"\033[{self.current_line};1H" + " " * columns, end='', flush=True)
-        # 第二次清除
-        print(f"\033[{self.current_line};1H" + " " * columns, end='', flush=True)
+
+        line = shutil.get_terminal_size().lines if line is None else line
+
+        print(f"\033[{int(line)};{columns - int(text_length) + 1}H\033[K" + " " * text_length, end='', flush=True)
 
     def records(self):
         '''显示运行片段'''
@@ -160,7 +160,7 @@ class RunningAnimation:
     用于在控制台实时显示运行中的动画效果，如加载、进度条等。
     '''
 
-    def __init__(self, run_chars, interval=0.1):
+    def __init__(self, run_chars, interval=0.2):
         self.run_chars = run_chars    # 动画字符
         self.interval = interval                  # 动画间隔
         self.is_running = False                   # 是否正在运行
