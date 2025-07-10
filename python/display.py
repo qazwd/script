@@ -160,7 +160,7 @@ class RunningAnimation:
     用于在控制台实时显示运行中的动画效果，如加载、进度条等。
     '''
 
-    def __init__(self, run_chars, interval=0.2):
+    def __init__(self, run_chars=['|', '/', '-', '\\'], interval=0.2):
         self.run_chars = run_chars    # 动画字符
         self.interval = interval                  # 动画间隔
         self.is_running = False                   # 是否正在运行
@@ -259,13 +259,15 @@ if __name__ == '__main__':
 '''
 if __name__ == '__main__':
     # 方法一：
-    run_chars = ['|', '/', '-', '\\']
-    with RunningAnimation(run_chars, interval=0.2) as anim:
+    #run_chars = ['|', '/', '-', '\\']
+    #with RunningAnimation(run_chars, interval=0.2) as anim:
+    with RunningAnimation(interval=0.2) as anim:
         time.sleep(5)  # 模拟长时间运行的任务
     print("\n动画结束")
     # 方法二：
-    run_chars = ['|', '/', '-', '\\']
-    anim = RunningAnimation(run_chars, interval=0.2)
+    #run_chars = ['|', '/', '-', '\\']
+    #anim = RunningAnimation(run_chars, interval=0.2)
+    anim = RunningAnimation(interval=0.2)
     anim.start()  # 启动动画
     try:
         time.sleep(5)  # 模拟长时间运行的任务
