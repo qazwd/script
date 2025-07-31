@@ -28,8 +28,8 @@ def get_job_listings():
 
     while True:
         # 复制参数模板并更新偏移量
-        payload = payload_template.copy()
-        payload["offset"] = offset
+        payload = payload_template.copy()   
+        payload["offset"] = offset      # 分页参数，用于获取不同页的职位数据
 
         try:
             # 发送 POST 请求，将参数以 JSON 格式放在请求体中

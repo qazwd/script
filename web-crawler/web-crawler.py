@@ -1,7 +1,18 @@
 import requests
 
-def get_param():
+def get_url(target_url):
     url = f'{target_url}'
+    return url
+
+def get_headers(User_Agent=None,
+                Cookie=None,
+                src_url=None,
+                Accept=None,
+                Accept_Encoding=None,
+                Host=None,
+                Connection=None,
+                Authorization=None,
+                Content_Type=None):
     headers = {
         # 主要
         "User-Agent": f"{User_Agent}",            # 标识客户端类型
@@ -15,24 +26,95 @@ def get_param():
         "Authorization": f"{Authorization}",      # 用于身份验证
         "Content-Type": f"{Content_Type}"         # 指定请求体的数据格式（仅 POST/PUT）等请求需设置
     }
-    # GET 请求模板(拼在 URL 之后)
-    params = {``
-        "page": 1,
+    return headers
+
+def get_params(page=None, 
+               size=None, 
+               keyword=None, 
+               sort=None):
+    params = {
+        "page": page,
         "size": f"{size}",
         "keyword": f"{keyword}",
         "sort": f"{sort}"
     }
-    # POST 表单请求模板
+    return params
+
+def get_data(uid=None, name=None):
     data = {
-        "username": f"{username}",
-        "password": f"{password}"
+        "id": f"{uid}",
+        "name": f"{name}"                           
     }
-    # POST JSON 请求模板
+    return data
+
+def get_json(uid=None, name=None):
     json={
         "id": f"{uid}",
         "name": f"{name}"                           
     }
-    timeout = 10
+    return json
+
+def get_timeout(timeout=None):
+    return timeout
+
+def get_method(method=None):
+    return method
+
+def get_datas(url, data, json, print_data=False):
+    data_list = []
+    offset = 0
+
+    while True:
+        
+        # 复制参数模板并更新偏移量
+        payload = json.copy()
+        #payload["offset"] = data.get("offset", 0)  # 分页参数
+        payload["offset"] = offset  # 分页参数
+
+        try:
+            response = requests.post(url, data=data, json=payload)
+            print("\n状态码\n:", response.status_code)
+            response.raise_for_status()
+            data = response.json()
+            data_list.append(data)
+
+            if print_data:
+                print("Response Data:\n", data)
+
+            # 更新偏移量，准备下一页请求
+            offset += payload["limit"]
+            print(f"当前偏移量: {offset}")  # 打印当前偏移量，方便调试
+
+        except requests.exceptions.RequestException as e:
+            print(f"请求失败: {e}")
+            break
+        except ValueError:
+            print("无法解析 JSON 数据")
+            print("响应内容:", response.text)
+            break
+
+    return data_list
+
+def get_target_data(data_list, target_key):
+    target_data = []
+    
+    # 提取目标数据
+    if not data_list:
+        print("数据列表为空")
+        return None
+    if target_key not in data_list[0]:
+        print(f"目标键 '{target_key}' 不存在于数据中")
+        return None
+    if isinstance(data_list[0], dict):
+        print("数据列表中的元素不是字典类型")
+        return None
+    
+    target_data = data_list[0][target_key]
+    
+    for data in data_list:
+        target_data.append(data[target_key])
+    return target_data
+
 
 if __name__ == "__main__":
     # 目标 API 的 URL
@@ -54,3 +136,6 @@ if __name__ == "__main__":
         "offset": 0,
         "searchText": ""
     }
+
+    # 定义目标键
+    target_key = "data"
